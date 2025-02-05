@@ -1,0 +1,4 @@
+code, name,          unit price
+AP,   Air Purifiers,     18920
+DL,   Digital Locks,     12550
+HD,   Hand Dryers,        7500

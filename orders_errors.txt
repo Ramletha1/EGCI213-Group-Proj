@@ -1,0 +1,15 @@
+id, name,  product code, units, installment plan
+1,  Aaron, AX,           10,    6
+2,  Blake, AP,            5,    O
+3,  Colin, DL,          -20,   10
+4,  Dylan, HD,           15,   15
+5,  Blake, DL,                  0
+6,  Colin, HD,          1.5,   6.5
+7,  Erica, AP,           20,   10,  30
+8,  Blake, HD,           25,    3
+9,  Fiona, HD,           20,    0
+10, Colin, AP,           30,   10
+11, Gavin, AP,           10,    6
+12, Aaron, HD,           10,   10
+13, Dylan, DL,           50,    6
+14, Colin, DL,           20,    6

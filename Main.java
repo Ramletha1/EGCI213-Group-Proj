@@ -1,0 +1,141 @@
+// Project 1
+
+// * Check file path *
+
+import java.util.*;
+import java.io.*;
+
+
+
+// For orders_errors.txt
+class InvalidNumberException extends Exception{
+    public InvalidNumberException(String message){
+        super(message);
+    }
+}
+
+class InvalidNameException extends Exception{
+    public InvalidNameException(String message){
+        super(message);
+    }
+}
+
+// From products.txt
+class Product{
+    // Original from file
+    private string product_code;
+    private string product_name;
+    private int product_unitprice;
+
+    // Extra requirement
+    private int product_totalCash;
+    private int product_totalUnit;
+
+    // Area for method
+    public Product(String product_code, String product_name, int product_unitprice){
+        this.product_code = product_code;
+        this.product_name = product_name;
+        this.product_unitprice = product_unitprice;
+        this.product_totalCash = 0;
+        this.product_totalUnit = 0;
+    }
+
+    public void ProductInfo(){
+        System.out.printf("%s (%s) unit price = %d",product_name, product_code, product_unitprice);
+    }
+}
+
+
+
+// From orders.txt + product_name
+class Order{
+    // Original from file
+    private int order_id;
+    private string order_name;
+    private string order_code;
+    private int order_unit;
+    private int order_plan;
+
+    // Extra requirement
+    private int product_name;
+
+    // Area for method
+    public Order(int order_id, String order_name, String order_code, int order_unit, int order_plan){
+        this.order_id = order_id;
+        this.order_name = order_name;
+        this.order_code = order_code;
+        this.order_unit = order_unit;
+        this.order_plan = order_plan;
+    }
+
+    public void OrderInfo(){
+        System.out.printf("Order %d >> %s  %s x %d  %d-month installments",order_id, order_name, product_name, order_unit, order_plan);
+    }
+}
+
+// From orders.txt + order_name
+class Customer{
+    // Original from file
+    private string order_name;
+
+    // Extra requirement
+    private int order_point;
+
+    // Area for method
+}
+
+
+
+// From installments.txt
+class Installment{
+    // Original from file
+    private int month;
+    private double interest;
+
+    // Extra requirement
+    // Area for method
+    public Installment(int month, double interest){
+        this.month = month;
+        this.interest = interest;
+    }
+
+    public void InstallInfo(){
+        System.out.printf("%d-month plan   monthly interest = %.2f %",month, interest);
+    }
+}
+
+
+
+public class Main{
+    // According to the requirement, errors locate in 'orders_errors.txt' only
+    public static void CheckingNumber(int[] number) throws InvalidNumberException{
+        // int[] number = {order_id, order_unit, order_plan};
+    }
+
+    public static void CheckingName(String[] name) throws InvalidNameException{
+        // String[] name = {order_name, order_code};
+    }
+
+    // For main, didn't add try catch yet
+    public static void main(String[] args){
+        // Scanner
+        Scanner InputScan = new Scanner(System.in);
+
+        // products.txt
+        File ProductFile = new File("products.txt");
+        Scanner ProductScan = new Scanner(ProductFile);
+        System.out.println("Read from" + ProductFile.getPath());
+
+        // installments.txt
+        File InstallFile = new File("installments.txt");
+        Scanner InstallScan = new Scanner(InstallFile);
+        System.out.println("\nRead from" + InstallFile.getPath());
+
+        // orders.txt
+        File OrderFile = new File("orders.txt");
+        Scanner OrderScan = new Scanner(OrderScan);
+        System.out.println("\nRead from" + OrderFile.getPath());
+
+        // File OrderErrFile = new File("orders_errors.txt")
+    }
+}

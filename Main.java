@@ -23,8 +23,8 @@ class InvalidNameException extends Exception{
 // From products.txt
 class Product{
     // Original from file
-    private string product_code;
-    private string product_name;
+    private String product_code;
+    private String product_name;
     private int product_unitprice;
 
     // Extra requirement
@@ -51,8 +51,8 @@ class Product{
 class Order{
     // Original from file
     private int order_id;
-    private string order_name;
-    private string order_code;
+    private String order_name;
+    private String order_code;
     private int order_unit;
     private int order_plan;
 
@@ -76,7 +76,7 @@ class Order{
 // From orders.txt + order_name
 class Customer{
     // Original from file
-    private string order_name;
+    private String order_name;
 
     // Extra requirement
     private int order_point;
@@ -118,22 +118,39 @@ public class Main{
 
     // For main, didn't add try catch yet
     public static void main(String[] args){
+
+        ArrayList<Product> productsList = new ArrayList<Product>();
+        ArrayList<Customer> customersList = new ArrayList<Customer>();
+        ArrayList<Installment> installmentsList = new ArrayList<Installment>();
+
         // Scanner
         Scanner InputScan = new Scanner(System.in);
 
         // products.txt
         File ProductFile = new File("products.txt");
         Scanner ProductScan = new Scanner(ProductFile);
-        System.out.println("Read from" + ProductFile.getPath());
+        System.out.println("Read from " + ProductFile.getPath());
+        ProductScan.nextLine();
+        while(ProductScan.hasNext()){
+            String line = ProductScan.nextLine();
+            String [] cols = line.split(",");
+            String code = cols[0].trim();
+            String productName = cols[1].trim();
+            int productPrice = Integer.parseInt(cols[2].trim());
+
+            productsList.add(new Product(code,productName,productPrice));
+            System.out.printf("%18s (%2s)    unit price = %,6d",productName,code,productPrice);
+
+        }
 
         // installments.txt
         File InstallFile = new File("installments.txt");
-        Scanner InstallScan = new Scanner(InstallFile);
+        //Scanner InstallScan = new Scanner(InstallFile);
         System.out.println("\nRead from" + InstallFile.getPath());
 
         // orders.txt
         File OrderFile = new File("orders.txt");
-        Scanner OrderScan = new Scanner(OrderScan);
+        //Scanner OrderScan = new Scanner(OrderFile);
         System.out.println("\nRead from" + OrderFile.getPath());
 
         // File OrderErrFile = new File("orders_errors.txt")

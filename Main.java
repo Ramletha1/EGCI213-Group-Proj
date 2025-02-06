@@ -41,7 +41,7 @@ class Product{
     }
 
     public void ProductInfo(){
-        System.out.printf("%s (%s) unit price = %d",product_name, product_code, product_unitprice);
+        System.out.printf("%s (%s) unit price = %d\n",product_name, product_code, product_unitprice);
     }
 }
 
@@ -69,7 +69,7 @@ class Order{
     }
 
     public void OrderInfo(){
-        System.out.printf("Order %d >> %s  %s x %d  %d-month installments",order_id, order_name, product_name, order_unit, order_plan);
+        System.out.printf("Order %d >> %s  %s x %d  %d-month installments\n",order_id, order_name, product_name, order_unit, order_plan);
     }
 }
 
@@ -100,7 +100,7 @@ class Installment{
     }
 
     public void InstallInfo(){
-        System.out.printf("%d-month plan   monthly interest = %.2f %",month, interest);
+        System.out.printf("%d-month plan   monthly interest = %.2f %%\n",month, interest);
     }
 }
 
@@ -125,7 +125,7 @@ public class Main{
 
         // Scanner
         Scanner InputScan = new Scanner(System.in);
-
+    try{
         // products.txt
         File ProductFile = new File("products.txt");
         Scanner ProductScan = new Scanner(ProductFile);
@@ -139,14 +139,30 @@ public class Main{
             int productPrice = Integer.parseInt(cols[2].trim());
 
             productsList.add(new Product(code,productName,productPrice));
-            System.out.printf("%18s (%2s)    unit price = %,6d",productName,code,productPrice);
-
-        }
+        
+        } 
+            for(int i=0;i<productsList.size();i++){
+                productsList.get(i).ProductInfo();
+            }
+        
 
         // installments.txt
         File InstallFile = new File("installments.txt");
-        //Scanner InstallScan = new Scanner(InstallFile);
+        Scanner InstallScan = new Scanner(InstallFile);
         System.out.println("\nRead from" + InstallFile.getPath());
+        InstallScan.nextLine();
+        while(InstallScan.hasNext()){
+            String line = InstallScan.nextLine();
+            String [] cols = line.split(",");
+            int months = Integer.parseInt(cols[0]);
+            double interest = Double.parseDouble(cols[1]);
+
+            installmentsList.add(new Installment(months,interest));
+
+        }
+        for(int i=0;i<installmentsList.size();i++){
+                installmentsList.get(i).InstallInfo();
+            }
 
         // orders.txt
         File OrderFile = new File("orders.txt");
@@ -154,5 +170,6 @@ public class Main{
         System.out.println("\nRead from" + OrderFile.getPath());
 
         // File OrderErrFile = new File("orders_errors.txt")
+    }catch(Exception e){System.out.println(e);}
     }
 }

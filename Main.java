@@ -56,6 +56,10 @@ class Product{
         return product_name;
     }
 
+    public int getProductPrice(){
+        return product_unitprice;
+    }
+
 }
 
 
@@ -65,24 +69,31 @@ class Order{
     // Original from file
     private int order_id;
     private Customer order_name;
-    private Product order_code;
+    private Product product_name;
     private int order_unit;
     private int order_plan;
 
-    // Extra requirement
-    private int product_name;
 
     // Area for method
-    public Order(int order_id, Customer order_name, Product order_code, int order_unit, int order_plan){
+    public Order(int order_id, Customer order_name, Product product_name, int order_unit, int order_plan){
         this.order_id = order_id;
         this.order_name = order_name;
-        this.order_code = order_code;
+        this.product_name = product_name;
         this.order_unit = order_unit;
         this.order_plan = order_plan;
     }
 
     public void OrderInfo(){
-        System.out.printf("Order %d >> %s  %s x %d  %d-month installments\n",order_id, order_name, product_name, order_unit, order_plan);
+        System.out.printf("Order %2d >> %-5s  %-14s x %2d  %3d-month installments\n",order_id, order_name.getName(), product_name.getProductName(), order_unit, order_plan);
+    }
+
+    public void OrderProcess(){
+        int points_earn = product_name.getProductPrice()*order_unit/500;
+        System.out.printf("%2d. %-5s (%5d pts) ",order_id,order_name.getName(),order_name.getPoints());
+        System.out.printf("order = %-14s x %2d  ",product_name.getProductName(),order_unit);
+        System.out.printf("sub-total(1) = %,10.2f ",(float)product_name.getProductPrice()*order_unit);
+        System.out.printf("(+ %5d pts next order)\n",points_earn);
+        order_name.addPoints(points_earn);
     }
 }
 
@@ -95,6 +106,23 @@ class Customer{
     private int order_point;
 
     // Area for method
+
+    public Customer(String name,int point){
+        this.order_name=name;
+        this.order_point=point;
+    }
+
+    public String getName(){
+        return order_name;
+    }
+
+    public int getPoints(){
+        return order_point;
+    }
+
+    public void addPoints(int num){
+        order_point += num;
+    }
 }
 
 
@@ -139,6 +167,8 @@ public class Main{
     }
 
 
+
+
     // According to the requirement, errors locate in 'orders_errors.txt' only
     public static void CheckingNumber(int[] number) throws InvalidNumberException{
         // int[] number = {order_id, order_unit, order_plan};
@@ -154,6 +184,7 @@ public class Main{
         ArrayList<Product> productsList = new ArrayList<Product>();
         ArrayList<Customer> customersList = new ArrayList<Customer>();
         ArrayList<Installment> installmentsList = new ArrayList<Installment>();
+        ArrayList<Order> orderList = new ArrayList<Order>();
 
         // Scanner
         Scanner InputScan = new Scanner(System.in);
@@ -204,17 +235,58 @@ public class Main{
                 String [] cols = line.split(",");
                 int id = Integer.parseInt(cols[0].trim());
                 String name = cols[1].trim();
+                Customer current_customer = new Customer("EMPTY",0);
+                int x = 0;
+                do{
+                    if(customersList.size()==0){
+                        current_customer = new Customer(name,0);
+                        customersList.add(current_customer);
+                        
+                        break;
+                    }else if(customersList.get(x).getName().equals(name)){
+                        current_customer = customersList.get(x);
+                        
+                        break;
+                    }else if(x==customersList.size()-1){
+                        current_customer = new Customer(name,0);
+                        customersList.add(current_customer);
+                        
+                        break;
+                        
+                    }
+                    x++;
+                    
+                }while(x<customersList.size());
+
+                Product productOrder = new Product("EMPTY","E",0);
+                String productCode = cols[2].trim();
                 for (int i = 0; i<productsList.size();i++){
-                    if(productsList.get(i).getProductCode().equals(cols[2].trim())){
-                        String productName = productsList.get(i).getProductName();
+                    if(productsList.get(i).getProductCode().equals(productCode)){
+                        productOrder = productsList.get(i);
+                        
                         break;
                     }else if(i==productsList.size()-1){
-                        throw InvalidProductExcetion("Doesnt Exist\n"+line);
+                        continue;    
+                        
                     }
                 }
-                System.out.println("");
-
+                int unit = Integer.parseInt(cols[3].trim());
+                int plan = Integer.parseInt(cols[4].trim());
+                
+                //System.out.printf("%s",productOrder.getProductName());
+                orderList.add(new Order(id,current_customer,productOrder,unit,plan));
+                
             }
+
+            for(int i =0; i<orderList.size();i++){
+                orderList.get(i).OrderInfo();
+            }
+
+            System.out.println("\n=== Order processing ===");
+            for(int i =0; i<orderList.size();i++){
+                orderList.get(i).OrderProcess();
+            }
+            
 
             // File OrderErrFile = new File("orders_errors.txt")
         }catch(Exception e){System.out.println(e);}

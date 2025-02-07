@@ -2,11 +2,15 @@
 
 // * Check file path *
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 
-
+class InvalidProductExcetion extends Exception{
+    public InvalidProductExcetion(String message){
+        super(message);
+    }
+}
 // For orders_errors.txt
 class InvalidNumberException extends Exception{
     public InvalidNumberException(String message){
@@ -41,8 +45,17 @@ class Product{
     }
 
     public void ProductInfo(){
-        System.out.printf("%s (%s) unit price = %d\n",product_name, product_code, product_unitprice);
+        System.out.printf("%-15s (%s) unit price = %d\n",product_name, product_code, product_unitprice);
     }
+
+    public String getProductCode(){
+        return product_code;
+    }
+
+    public String getProductName(){
+        return product_name;
+    }
+
 }
 
 
@@ -51,8 +64,8 @@ class Product{
 class Order{
     // Original from file
     private int order_id;
-    private String order_name;
-    private String order_code;
+    private Customer order_name;
+    private Product order_code;
     private int order_unit;
     private int order_plan;
 
@@ -60,7 +73,7 @@ class Order{
     private int product_name;
 
     // Area for method
-    public Order(int order_id, String order_name, String order_code, int order_unit, int order_plan){
+    public Order(int order_id, Customer order_name, Product order_code, int order_unit, int order_plan){
         this.order_id = order_id;
         this.order_name = order_name;
         this.order_code = order_code;
@@ -100,13 +113,32 @@ class Installment{
     }
 
     public void InstallInfo(){
-        System.out.printf("%d-month plan   monthly interest = %.2f %%\n",month, interest);
+        System.out.printf("%2d-month plans   monthly interest = %.2f %%\n",month, interest);
     }
 }
 
 
 
 public class Main{
+    public static String checkFile(String  fileName){
+        String path = "";
+        fileName = path+fileName;
+        while(true){
+            File newFile = new File(fileName);
+            try(Scanner inFile = new Scanner(newFile)){
+                System.out.println("\nRead from " + newFile.getPath());
+                break;
+            }catch(Exception e){
+                System.out.println(e);
+                System.out.println("New File Name =");
+                Scanner input = new Scanner(System.in);
+                fileName = input.nextLine();
+            }
+        }
+        return fileName;
+    }
+
+
     // According to the requirement, errors locate in 'orders_errors.txt' only
     public static void CheckingNumber(int[] number) throws InvalidNumberException{
         // int[] number = {order_id, order_unit, order_plan};
@@ -125,51 +157,70 @@ public class Main{
 
         // Scanner
         Scanner InputScan = new Scanner(System.in);
-    try{
-        // products.txt
-        File ProductFile = new File("products.txt");
-        Scanner ProductScan = new Scanner(ProductFile);
-        System.out.println("Read from " + ProductFile.getPath());
-        ProductScan.nextLine();
-        while(ProductScan.hasNext()){
-            String line = ProductScan.nextLine();
-            String [] cols = line.split(",");
-            String code = cols[0].trim();
-            String productName = cols[1].trim();
-            int productPrice = Integer.parseInt(cols[2].trim());
+        try{
+            // products.txt
+            File ProductFile = new File(checkFile("products.txt"));
+            Scanner ProductScan = new Scanner(ProductFile);
+            ProductScan.nextLine();
+            while(ProductScan.hasNext()){
+                String line = ProductScan.nextLine();
+                String [] cols = line.split(",");
+                String code = cols[0].trim();
+                String productName = cols[1].trim();
+                int productPrice = Integer.parseInt(cols[2].trim());
 
-            productsList.add(new Product(code,productName,productPrice));
-        
-        } 
-            for(int i=0;i<productsList.size();i++){
-                productsList.get(i).ProductInfo();
+                productsList.add(new Product(code,productName,productPrice));
+            
+            } 
+                for(int i=0;i<productsList.size();i++){
+                    productsList.get(i).ProductInfo();
+                }
+            
+            System.out.println("");
+
+            // installments.txt
+            File InstallFile = new File(checkFile("installments.txt"));
+            Scanner InstallScan = new Scanner(InstallFile);
+            InstallScan.nextLine();
+            while(InstallScan.hasNext()){
+                String line = InstallScan.nextLine();
+                String [] cols = line.split(",");
+                int months = Integer.parseInt(cols[0]);
+                double interest = Double.parseDouble(cols[1]);
+
+                installmentsList.add(new Installment(months,interest));
+
             }
-        
+            for(int i=0;i<installmentsList.size();i++){
+                    installmentsList.get(i).InstallInfo();
+                }
 
-        // installments.txt
-        File InstallFile = new File("installments.txt");
-        Scanner InstallScan = new Scanner(InstallFile);
-        System.out.println("\nRead from" + InstallFile.getPath());
-        InstallScan.nextLine();
-        while(InstallScan.hasNext()){
-            String line = InstallScan.nextLine();
-            String [] cols = line.split(",");
-            int months = Integer.parseInt(cols[0]);
-            double interest = Double.parseDouble(cols[1]);
+            // orders.txt
+            File OrderFile = new File(checkFile("orders.txt"));
+            Scanner OrderScan = new Scanner(OrderFile);
+            OrderScan.nextLine();
+            while(OrderScan.hasNext()){
+                String line = OrderScan.nextLine();
+                String [] cols = line.split(",");
+                int id = Integer.parseInt(cols[0].trim());
+                String name = cols[1].trim();
+                for (int i = 0; i<productsList.size();i++){
+                    if(productsList.get(i).getProductCode().equals(cols[2].trim())){
+                        String productName = productsList.get(i).getProductName();
+                        break;
+                    }else if(i==productsList.size()-1){
+                        throw InvalidProductExcetion("Doesnt Exist\n"+line);
+                    }
+                }
+                System.out.println("");
 
-            installmentsList.add(new Installment(months,interest));
-
-        }
-        for(int i=0;i<installmentsList.size();i++){
-                installmentsList.get(i).InstallInfo();
             }
 
-        // orders.txt
-        File OrderFile = new File("orders.txt");
-        //Scanner OrderScan = new Scanner(OrderFile);
-        System.out.println("\nRead from" + OrderFile.getPath());
+            // File OrderErrFile = new File("orders_errors.txt")
+        }catch(Exception e){System.out.println(e);}
+    }
 
-        // File OrderErrFile = new File("orders_errors.txt")
-    }catch(Exception e){System.out.println(e);}
+    private static Exception InvalidProductExcetion(String doesnt_Exist) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

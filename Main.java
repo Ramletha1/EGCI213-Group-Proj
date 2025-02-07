@@ -161,11 +161,11 @@ public class Main{
                 System.out.println("New File Name =");
                 Scanner input = new Scanner(System.in);
                 fileName = input.nextLine();
+                input.close();
             }
         }
         return fileName;
     }
-
 
 
 
@@ -187,7 +187,6 @@ public class Main{
         ArrayList<Order> orderList = new ArrayList<Order>();
 
         // Scanner
-        Scanner InputScan = new Scanner(System.in);
         try{
             // products.txt
             File ProductFile = new File(checkFile("products.txt"));
@@ -195,17 +194,19 @@ public class Main{
             ProductScan.nextLine();
             while(ProductScan.hasNext()){
                 String line = ProductScan.nextLine();
-                String [] cols = line.split(",");
-                String code = cols[0].trim();
-                String productName = cols[1].trim();
-                int productPrice = Integer.parseInt(cols[2].trim());
+                String [] cols = line.trim().split("\\s*,\\s*");
+                String code = cols[0];
+                String productName = cols[1];
+                int productPrice = Integer.parseInt(cols[2]);
 
                 productsList.add(new Product(code,productName,productPrice));
+            }
+            ProductScan.close();
             
-            } 
-                for(int i=0;i<productsList.size();i++){
-                    productsList.get(i).ProductInfo();
-                }
+            for (Product product : productsList){
+                //productsList.get(i).ProductInfo();
+                product.ProductInfo();
+            }
             
             System.out.println("");
 
@@ -215,16 +216,17 @@ public class Main{
             InstallScan.nextLine();
             while(InstallScan.hasNext()){
                 String line = InstallScan.nextLine();
-                String [] cols = line.split(",");
+                String [] cols = line.trim().split("\\s*,\\s*");
                 int months = Integer.parseInt(cols[0]);
                 double interest = Double.parseDouble(cols[1]);
 
                 installmentsList.add(new Installment(months,interest));
 
             }
-            for(int i=0;i<installmentsList.size();i++){
-                    installmentsList.get(i).InstallInfo();
-                }
+            InstallScan.close();
+            for(Installment installment : installmentsList){
+                    installment.InstallInfo();
+            }
 
             // orders.txt
             File OrderFile = new File(checkFile("orders.txt"));
@@ -232,11 +234,14 @@ public class Main{
             OrderScan.nextLine();
             while(OrderScan.hasNext()){
                 String line = OrderScan.nextLine();
-                String [] cols = line.split(",");
-                int id = Integer.parseInt(cols[0].trim());
-                String name = cols[1].trim();
+                String [] cols = line.trim().split("\\s*,\\s*");
+                int id = Integer.parseInt(cols[0]);
+                String name = cols[1];
                 Customer current_customer = new Customer("EMPTY",0);
                 int x = 0;
+                int invalid = 0;
+
+                
                 do{
                     if(customersList.size()==0){
                         current_customer = new Customer(name,0);
@@ -245,54 +250,52 @@ public class Main{
                         break;
                     }else if(customersList.get(x).getName().equals(name)){
                         current_customer = customersList.get(x);
-                        
                         break;
+
                     }else if(x==customersList.size()-1){
                         current_customer = new Customer(name,0);
                         customersList.add(current_customer);
                         
+                        
                         break;
                         
                     }
+                    
                     x++;
                     
                 }while(x<customersList.size());
+                
 
                 Product productOrder = new Product("EMPTY","E",0);
-                String productCode = cols[2].trim();
+                String productCode = cols[2];
                 for (int i = 0; i<productsList.size();i++){
-                    if(productsList.get(i).getProductCode().equals(productCode)){
-                        productOrder = productsList.get(i);
-                        
+                    if (productsList.get(i).getProductCode().equals(productCode)){
+                        productOrder = productsList.get(i);   
                         break;
-                    }else if(i==productsList.size()-1){
-                        continue;    
-                        
+
+                    } else if (i==productsList.size()-1) {
+                        System.out.println("This product doesnt exist");
+                        invalid = 1;
+                        continue;
                     }
                 }
-                int unit = Integer.parseInt(cols[3].trim());
-                int plan = Integer.parseInt(cols[4].trim());
-                
-                //System.out.printf("%s",productOrder.getProductName());
-                orderList.add(new Order(id,current_customer,productOrder,unit,plan));
+                int unit = Integer.parseInt(cols[3]);
+                int plan = Integer.parseInt(cols[4]);
+                if (invalid == 0) orderList.add(new Order(id,current_customer,productOrder,unit,plan));
                 
             }
+            OrderScan.close();
 
-            for(int i =0; i<orderList.size();i++){
-                orderList.get(i).OrderInfo();
+            for(Order order : orderList){
+                order.OrderInfo();
             }
 
             System.out.println("\n=== Order processing ===");
-            for(int i =0; i<orderList.size();i++){
-                orderList.get(i).OrderProcess();
+            for(Order order : orderList){
+                order.OrderProcess();
             }
             
 
-            // File OrderErrFile = new File("orders_errors.txt")
         }catch(Exception e){System.out.println(e);}
-    }
-
-    private static Exception InvalidProductExcetion(String doesnt_Exist) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -88,10 +88,47 @@ class Order{
     }
 
     public void OrderProcess(){
-        int points_earn = product_name.getProductPrice()*order_unit/500;
+        float subtotal1 = product_name.getProductPrice() * order_unit;
+        int points_earn = (int) (subtotal1/500);
+         
+         
+        float discount = 0;
+        if (order_name.getPoints() >= 100) {
+            discount = subtotal1 * 0.05f; //
+            order_name.addPoints(-100); 
+        } else if (order_name.getPoints() == 0) {
+            discount = 200;
+        }
+
+        float subtotal2 = subtotal1 - discount;
+
+        float totalPayment = subtotal2;
+        float monthlyPayment = 0;
+        float totalInterest = 0;
+
+        if (order_plan > 0) {
+        for (Installment inst : Main.installmentsList) {
+            if (inst.getMonth() == order_plan) {
+                totalInterest = subtotal2 * (float) inst.getInterest() * order_plan;
+                totalPayment += totalInterest;
+                monthlyPayment = totalPayment / order_plan;
+                break;
+                }
+            }
+        }
+
         System.out.printf("%2d. %-5s (%5d pts) ",order_id,order_name.getName(),order_name.getPoints());
         System.out.printf("order = %-14s x %2d  ",product_name.getProductName(),order_unit);
         System.out.printf("sub-total(1) = %,10.2f ",(float)product_name.getProductPrice()*order_unit);
+        System.out.printf("discount = %,10.2f ", discount);
+        System.out.printf("sub-total(2) = %,10.2f ", subtotal2);
+        if (order_plan > 0) {
+            System.out.printf("Total interest = %,10.2f ", totalInterest);
+            System.out.printf("Total payment = %,10.2f ", totalPayment);
+            System.out.printf("Monthly payment = %,10.2f ", monthlyPayment);
+        } else {
+            System.out.printf("Total payment = %,10.2f ", totalPayment);
+        }
         System.out.printf("(+ %5d pts next order)\n",points_earn);
         order_name.addPoints(points_earn);
     }
@@ -140,6 +177,14 @@ class Installment{
         this.interest = interest;
     }
 
+    public int getMonth() {  
+        return month;
+    }
+
+    public double getInterest() {  
+        return interest;
+    }
+
     public void InstallInfo(){
         System.out.printf("%2d-month plans   monthly interest = %.2f %%\n",month, interest);
     }
@@ -148,6 +193,8 @@ class Installment{
 
 
 public class Main{
+
+    public static ArrayList<Installment> installmentsList = new ArrayList<>();
     public static String checkFile(String  fileName){
         String path = "";
         fileName = path+fileName;

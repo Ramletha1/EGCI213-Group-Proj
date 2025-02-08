@@ -296,7 +296,6 @@ public class Main{
                 Customer current_customer = new Customer("EMPTY",0);
                 int x = 0;
                 int invalid = 0;
-
                 
                 do{
                     if(customersList.size()==0){
@@ -311,12 +310,9 @@ public class Main{
                     }else if(x==customersList.size()-1){
                         current_customer = new Customer(name,0);
                         customersList.add(current_customer);
-                        
-                        
                         break;
                         
                     }
-                    
                     x++;
                     
                 }while(x<customersList.size());

@@ -31,6 +31,9 @@ class Product{
     private String product_name;
     private int product_unitprice;
 
+    private int product_totalCash = 0;
+    private int product_totalUnit = 0;
+
     // Area for method
     public Product(String product_code, String product_name, int product_unitprice){
         this.product_code = product_code;
@@ -100,6 +103,7 @@ class Order{
 
         if (order_plan > 0) {
         for (Installment inst : Main.installmentsList) {
+            System.out.println("Checking Installment Plan: " + inst.getMonth() + "-months with interest " + inst.getInterest());
             if (inst.getMonth() == order_plan) {
                 totalInterest = subtotal2 * (float) inst.getInterest() * order_plan;
                 totalPayment += totalInterest;
@@ -129,7 +133,7 @@ class Order{
         System.out.printf(" ".repeat(23)+"%-25s", (order_plan>0) ? Integer.toString(order_plan)+"-months installments":"full payment");
         System.out.printf(" ".repeat(8)+"%s\n",(order_plan>0) ? "total interest = "+String.format("%,10.2f", totalInterest)+" ":"");
         System.out.printf(" ".repeat(23)+"total    = %,10.2f ", totalPayment);
-        System.out.printf(" ".repeat(11)+"%s \n",(order_plan>0) ? "total interest = "+String.format("%,10.2f", monthlyPayment):"");
+        System.out.printf(" ".repeat(11)+"%s \n",(order_plan>0) ? "monthly total  = "+String.format("%,10.2f", monthlyPayment):"");
         
         
 

@@ -31,10 +31,6 @@ class Product{
     private String product_name;
     private int product_unitprice;
 
-    // Extra requirement
-    private int product_totalCash;
-    private int product_totalUnit;
-
     // Area for method
     public Product(String product_code, String product_name, int product_unitprice){
         this.product_code = product_code;

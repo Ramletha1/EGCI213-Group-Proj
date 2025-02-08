@@ -117,19 +117,24 @@ class Order{
             }
         }
 
-        System.out.printf("%2d. %-5s (%5d pts) ",order_id,order_name.getName(),order_name.getPoints());
-        System.out.printf("order = %-14s x %2d  ",product_name.getProductName(),order_unit);
-        System.out.printf("sub-total(1) = %,10.2f ",(float)product_name.getProductPrice()*order_unit);
-        System.out.printf("discount = %,10.2f ", discount);
-        System.out.printf("sub-total(2) = %,10.2f ", subtotal2);
-        if (order_plan > 0) {
-            System.out.printf("Total interest = %,10.2f ", totalInterest);
-            System.out.printf("Total payment = %,10.2f ", totalPayment);
-            System.out.printf("Monthly payment = %,10.2f ", monthlyPayment);
-        } else {
-            System.out.printf("Total payment = %,10.2f ", totalPayment);
-        }
-        System.out.printf("(+ %5d pts next order)\n",points_earn);
+        System.out.printf("%2d. %-5s (%6d pts) ",order_id,order_name.getName(),order_name.getPoints());
+        System.out.printf("order    = %-14s x %2d   ",product_name.getProductName(),order_unit);
+        System.out.printf("sub-total(1)   = %,10.2f  ",subtotal1);
+        System.out.printf("(+ %7d pts next order)\n",points_earn);
+
+        System.out.printf(" ".repeat(23)+"discount = %,12.2f ", discount);
+        System.out.printf(" ".repeat(9)+"sub-total(2)   = %,10.2f ", subtotal2);
+        System.out.printf("%s \n","Reminder to self : need to add point deduct here on some of them");
+        
+        System.out.printf(" ".repeat(23)+"%-25s", (order_plan>0) ? Integer.toString(order_plan)+"-months installments":"full payment");
+        System.out.printf(" ".repeat(8)+"%s\n",(order_plan>0) ? "total interest = "+String.format("%,10.2f", totalInterest)+" ":"");
+        System.out.printf(" ".repeat(23)+"total    = %,10.2f ", totalPayment);
+        System.out.printf(" ".repeat(11)+"%s \n",(order_plan>0) ? "total interest = "+String.format("%,10.2f", monthlyPayment):"");
+        
+        
+
+        System.out.println("");
+        
         order_name.addPoints(points_earn);
     }
 }

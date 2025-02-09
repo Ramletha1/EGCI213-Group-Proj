@@ -88,58 +88,55 @@ class Order{
 
     public void OrderProcess(){
         float subtotal1 = product_name.getProductPrice() * order_unit;
-        int points_earn = (int) (subtotal1/500);
-        
-         
-         
+        int points_earn = (int) (subtotal1 / 500);
+
+
         float discount = 0;
+        boolean usedPoints = false; 
+        int currentPoints = order_name.getPoints();
         
+        if (currentPoints >= 100) {
+            discount = subtotal1 * 0.05f; 
+            order_name.addPoints(-100); 
+            usedPoints = true;
+        } else if (currentPoints == 0) {
+            discount = 200;
+        }  
+      
 
         float subtotal2 = subtotal1 - discount;
-
+        float totalInterest = 0;
         float totalPayment = subtotal2;
         float monthlyPayment = 0;
-        float totalInterest = 0;
 
         if (order_plan > 0) {
-        for (Installment inst : Main.installmentsList) {
-            System.out.println("Checking Installment Plan: " + inst.getMonth() + "-months with interest " + inst.getInterest());
-            if (inst.getMonth() == order_plan) {
-                totalInterest = subtotal2 * (float) inst.getInterest() * order_plan;
-                totalPayment += totalInterest;
-                monthlyPayment = totalPayment / order_plan;
-                break;
+            for (Installment inst : Main.installmentsList) {
+                if (inst.getMonth() == order_plan) {
+                    totalInterest = (subtotal2 * (float) inst.getInterest() * order_plan) / 100;
+                    totalPayment = subtotal2 + totalInterest;
+                    monthlyPayment = totalPayment / order_plan;
+                    break;
                 }
-            }
+            }   
         }
 
-        System.out.printf("%2d. %-5s (%,6d pts) ",order_id,order_name.getName(),order_name.getPoints());
-        System.out.printf("order    = %-14s x %2d   ",product_name.getProductName(),order_unit);
-        System.out.printf("sub-total(1)   = %,10.2f  ",subtotal1);
-        System.out.printf("(+ %,5d pts next order)\n",points_earn);
+    System.out.printf("%2d. %-5s (%,6d pts) ", order_id, order_name.getName(), currentPoints);
+    System.out.printf("order    = %-14s x %2d   ", product_name.getProductName(), order_unit);
+    System.out.printf("sub-total(1)   = %,10.2f  ", subtotal1);
+    System.out.printf("(+ %,5d pts next order)\n", points_earn);
 
-        if (order_name.getPoints() >= 100) {
-            discount = subtotal1 * 0.05f; //
-            order_name.addPoints(-100); 
-            
-        } else if (order_name.getPoints() == 0) {
-            discount = 200;
-        }
+    System.out.printf(" ".repeat(23) + "discount = %,10.2f ", discount);
+    System.out.printf(" ".repeat(11) + "sub-total(2)   = %,10.2f ", subtotal2);
+    System.out.printf("%s \n", (order_name.getPoints() >= 100) ? " (-   100 pts)" : "");
 
-        System.out.printf(" ".repeat(23)+"discount = %,12.2f ", discount);
-        System.out.printf(" ".repeat(9)+"sub-total(2)   = %,10.2f ", subtotal2);
-        System.out.printf("%s \n",(order_name.getPoints() >= 100)?" (-   100 pts)":"");
-        
-        System.out.printf(" ".repeat(23)+"%-25s", (order_plan>0) ? Integer.toString(order_plan)+"-months installments":"full payment");
-        System.out.printf(" ".repeat(8)+"%s\n",(order_plan>0) ? "total interest = "+String.format("%,10.2f", totalInterest)+" ":"");
-        System.out.printf(" ".repeat(23)+"total    = %,10.2f ", totalPayment);
-        System.out.printf(" ".repeat(11)+"%s \n",(order_plan>0) ? "monthly total  = "+String.format("%,10.2f", monthlyPayment):"");
-        
-        
+    System.out.printf(" ".repeat(23) + "%-25s", (order_plan > 0) ? order_plan + "-months installments" : "full payment");
+    System.out.printf(" ".repeat(8) + "%s\n", (order_plan > 0) ? "total interest = " + String.format("%,10.2f", totalInterest) + " " : "");
+    System.out.printf(" ".repeat(23) + "total    = %,10.2f ", totalPayment);
+    System.out.printf(" ".repeat(11) + "%s \n", (order_plan > 0) ? "monthly total  = " + String.format("%,10.2f", monthlyPayment) : "");
 
-        System.out.println("");
-        
-        order_name.addPoints(points_earn);
+    System.out.println("");
+
+    order_name.addPoints(points_earn);
     }
 }
 
@@ -269,17 +266,32 @@ public class Main{
             // installments.txt
             File InstallFile = new File(checkFile("installments.txt"));
             Scanner InstallScan = new Scanner(InstallFile);
-            InstallScan.nextLine();
-            while(InstallScan.hasNext()){
-                String line = InstallScan.nextLine();
-                String [] cols = line.trim().split("\\s*,\\s*");
-                int months = Integer.parseInt(cols[0]);
-                double interest = Double.parseDouble(cols[1]);
 
-                installmentsList.add(new Installment(months,interest));
-
+            if (InstallScan.hasNextLine()) {
+                InstallScan.nextLine();
             }
-            InstallScan.close();
+
+            while (InstallScan.hasNextLine()) {
+            String line = InstallScan.nextLine().trim().replaceAll("\\s+", " ");
+            String[] cols = line.split("\\s*,\\s*");
+
+            if (cols.length != 2) {
+                System.out.println("ERROR: Invalid line format -> '" + line + "'");
+                continue;
+            }
+
+    try {
+        int months = Integer.parseInt(cols[0]);
+        double interest = Double.parseDouble(cols[1]);
+
+        Main.installmentsList.add(new Installment(months, interest));
+
+        System.out.printf("%-2d-month plan    monthly interest = %.2f%%\n", months, interest);
+    } catch (NumberFormatException e) {
+        System.out.println("ERROR: Invalid number format -> '" + line + "'");
+    }
+}
+        InstallScan.close();
             for(Installment installment : installmentsList){
                     installment.InstallInfo();
             }

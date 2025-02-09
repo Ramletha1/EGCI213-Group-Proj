@@ -127,7 +127,7 @@ class Order{
 
     System.out.printf(" ".repeat(23) + "discount = %,10.2f ", discount);
     System.out.printf(" ".repeat(11) + "sub-total(2)   = %,10.2f ", subtotal2);
-    System.out.printf("%s \n", (order_name.getPoints() >= 100) ? " (-   100 pts)" : "");
+    System.out.printf("%s \n", (usedPoints == true) ? " (-   100 pts)" : "");
 
     System.out.printf(" ".repeat(23) + "%-25s", (order_plan > 0) ? order_plan + "-months installments" : "full payment");
     System.out.printf(" ".repeat(8) + "%s\n", (order_plan > 0) ? "total interest = " + String.format("%,10.2f", totalInterest) + " " : "");

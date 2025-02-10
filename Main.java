@@ -301,25 +301,12 @@ public class Main{
                 InstallScan.nextLine();
             }
 
-            while (InstallScan.hasNextLine()) {
-                String line = InstallScan.nextLine().trim().replaceAll("\\s+", " ");
-                String[] cols = line.split("\\s*,\\s*");
-
-                if (cols.length != 2) {
-                    System.out.println("ERROR: Invalid line format -> '" + line + "'");
-                    continue;
-                }
-
-                try {
-                    int months = Integer.parseInt(cols[0]);
-                    double interest = Double.parseDouble(cols[1]);
-
-                    installmentsList.add(new Installment(months, interest));
-
-                    
-                } catch (NumberFormatException e) {
-                    System.out.println("ERROR: Invalid number format -> '" + line + "'");
-                }
+            while(InstallScan.hasNext()){
+                String line = InstallScan.nextLine();
+                String [] cols = line.trim().split("\\s*,\\s*");
+                int months = Integer.parseInt(cols[0]);
+                double interest = Double.parseDouble(cols[1]);
+                installmentsList.add(new Installment(months,interest));
             }
             InstallScan.close();
             

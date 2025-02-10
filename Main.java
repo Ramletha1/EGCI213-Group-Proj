@@ -222,7 +222,7 @@ class Installment{
     }
 
     public void InstallInfo(){
-        System.out.printf("%2d-month plans   monthly interest = %.2f %%\n",month, interest);
+        System.out.printf("%2d-month plans  joajds monthly interest = %.2f %%\n",month, interest);
     }
 }
 
@@ -302,28 +302,30 @@ public class Main{
             }
 
             while (InstallScan.hasNextLine()) {
-            String line = InstallScan.nextLine().trim().replaceAll("\\s+", " ");
-            String[] cols = line.split("\\s*,\\s*");
+                String line = InstallScan.nextLine().trim().replaceAll("\\s+", " ");
+                String[] cols = line.split("\\s*,\\s*");
 
-            if (cols.length != 2) {
-                System.out.println("ERROR: Invalid line format -> '" + line + "'");
-                continue;
+                if (cols.length != 2) {
+                    System.out.println("ERROR: Invalid line format -> '" + line + "'");
+                    continue;
+                }
+
+                try {
+                    int months = Integer.parseInt(cols[0]);
+                    double interest = Double.parseDouble(cols[1]);
+
+                    installmentsList.add(new Installment(months, interest));
+
+                    
+                } catch (NumberFormatException e) {
+                    System.out.println("ERROR: Invalid number format -> '" + line + "'");
+                }
             }
-
-    try {
-        int months = Integer.parseInt(cols[0]);
-        double interest = Double.parseDouble(cols[1]);
-
-        Main.installmentsList.add(new Installment(months, interest));
-
-        System.out.printf("%-2d-month plan    monthly interest = %.2f%%\n", months, interest);
-    } catch (NumberFormatException e) {
-        System.out.println("ERROR: Invalid number format -> '" + line + "'");
-    }
-}
-        InstallScan.close();
+            InstallScan.close();
+            
             for(Installment installment : installmentsList){
-                    installment.InstallInfo();
+                
+                installment.InstallInfo();
             }
 
             // orders.txt
@@ -402,7 +404,7 @@ public class Main{
             System.out.println("\n=== Customer summary ===");
 
             for(Customer customer : customersList){
-                System.out.printf("%7s remaining points = %,6d \n",customer.getName(),customer.getPoints());
+                System.out.printf("%-7s remaining points = %,6d \n",customer.getName(),customer.getPoints());
             }
             
 

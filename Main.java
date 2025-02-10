@@ -25,16 +25,26 @@ class InvalidNameException extends Exception{
 }
 
 // From products.txt
-class Product{
+class Product implements Comparable<Product>{
     // Original from file
     private String product_code;
     private String product_name;
     private int product_unitprice;
 
-    private int product_totalCash = 0;
-    private int product_totalUnit = 0;
+    private int product_totalCash;
+    private int product_totalUnit;
 
     // Area for method
+    public int compareTo(Product other){
+        if(this.product_totalUnit>other.product_totalUnit){
+            return-1;
+        }else if(this.product_totalUnit<other.product_totalUnit){
+            return 1;
+
+        }
+        else return 0;
+    }
+
     public Product(String product_code, String product_name, int product_unitprice){
         this.product_code = product_code;
         this.product_name = product_name;
@@ -57,6 +67,17 @@ class Product{
 
     public int getProductPrice(){
         return product_unitprice;
+    }
+
+    public void addSales(int unit){
+        product_totalUnit += unit;
+        product_totalCash += (unit*product_unitprice);
+
+    }
+
+    public int getTotal(int x){
+        if (x==0) return product_totalUnit;
+        return product_totalCash;
     }
 
 }
@@ -90,6 +111,7 @@ class Order{
         float subtotal1 = product_name.getProductPrice() * order_unit;
         int points_earn = (int) (subtotal1 / 500);
 
+        product_name.addSales(order_unit);
 
         float discount = 0;
         boolean usedPoints = false; 
@@ -141,7 +163,7 @@ class Order{
 }
 
 // From orders.txt + order_name
-class Customer{
+class Customer implements Comparable<Customer>{
     // Original from file
     private String order_name;
 
@@ -149,6 +171,14 @@ class Customer{
     private int order_point;
 
     // Area for method
+
+    public int compareTo(Customer other){
+        if(this.order_point>other.order_point){
+            return-1;
+        }else if(this.order_point<other.order_point){
+            return 1;
+        }else return 0;
+    }
 
     public Customer(String name,int point){
         this.order_name=name;
@@ -357,6 +387,22 @@ public class Main{
             System.out.println("\n=== Order processing ===");
             for(Order order : orderList){
                 order.OrderProcess();
+            }
+
+            Collections.sort(productsList);
+            Collections.sort(customersList);
+
+            System.out.println("\n=== Product summary ===");
+
+            for(Product product : productsList){
+                System.out.printf("%-15s total sales = %3d units  =  %,12.2f THB   ",product.getProductName(),product.getTotal(0),(float)product.getTotal(1));
+                System.out.printf("lucky draw winner = not finish \n");
+            }
+
+            System.out.println("\n=== Customer summary ===");
+
+            for(Customer customer : customersList){
+                System.out.printf("%7s remaining points = %,6d \n",customer.getName(),customer.getPoints());
             }
             
 

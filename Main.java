@@ -107,7 +107,7 @@ class Order{
         System.out.printf("Order %2d >> %-5s  %-14s x %2d  %3d-month installments\n",order_id, order_name.getName(), product_name.getProductName(), order_unit, order_plan);
     }
 
-    public void OrderProcess(){
+    public void OrderProcess(ArrayList<Installment> installmentsList){
         float subtotal1 = product_name.getProductPrice() * order_unit;
         int points_earn = (int) (subtotal1 / 500);
 
@@ -132,7 +132,7 @@ class Order{
         float monthlyPayment = 0;
 
         if (order_plan > 0) {
-            for (Installment inst : Main.installmentsList) {
+            for (Installment inst : installmentsList) {
                 if (inst.getMonth() == order_plan) {
                     totalInterest = (subtotal2 * (float) inst.getInterest() * order_plan) / 100;
                     totalPayment = subtotal2 + totalInterest;
@@ -230,7 +230,6 @@ class Installment{
 
 public class Main{
 
-    public static ArrayList<Installment> installmentsList = new ArrayList<>();
     public static String checkFile(String  fileName){
         String path = "";
         fileName = path+fileName;
@@ -272,7 +271,7 @@ public class Main{
         // Scanner
         try{
             // products.txt
-            File ProductFile = new File(checkFile("products.txt"));
+            File ProductFile = new File(checkFile("product.txt"));
             Scanner ProductScan = new Scanner(ProductFile);
             ProductScan.nextLine();
             while(ProductScan.hasNext()){
@@ -375,7 +374,7 @@ public class Main{
 
             System.out.println("\n=== Order processing ===");
             for(Order order : orderList){
-                order.OrderProcess();
+                order.OrderProcess(installmentsList);
             }
 
             Collections.sort(productsList);

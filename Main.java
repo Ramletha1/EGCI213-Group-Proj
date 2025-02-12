@@ -5,21 +5,17 @@
 import java.io.*;
 import java.util.*;
 
-
-class InvalidProductExcetion extends Exception{
-    public InvalidProductExcetion(String message){
-        super(message);
-    }
-}
-// For orders_errors.txt
-class InvalidNumberException extends Exception{
-    public InvalidNumberException(String message){
-        super(message);
-    }
+class FileName {
+    public static final String PATH = "";                           // for VSCode
+    // public static final String PATH = "src/main/Java/";          // for NetBeans
+    public static final String PRODUCT = "products.txt";
+    public static final String INSTALLMENT = "installments.txt";
+    public static final String ORDER = "orders.txt";
+    // public static final String ORDER = "orders_errors.txt";
 }
 
-class InvalidNameException extends Exception{
-    public InvalidNameException(String message){
+class InvalidInputException extends Exception {
+    public InvalidInputException(String message){
         super(message);
     }
 }
@@ -34,17 +30,6 @@ class Product implements Comparable<Product>{
     private int product_totalCash;
     private int product_totalUnit;
 
-    // Area for method
-    public int compareTo(Product other){
-        if(this.product_totalUnit>other.product_totalUnit){
-            return-1;
-        }else if(this.product_totalUnit<other.product_totalUnit){
-            return 1;
-
-        }
-        else return 0;
-    }
-
     public Product(String product_code, String product_name, int product_unitprice){
         this.product_code = product_code;
         this.product_name = product_name;
@@ -53,8 +38,16 @@ class Product implements Comparable<Product>{
         this.product_totalUnit = 0;
     }
 
+    // Area for method
+    public int compareTo(Product other){
+        if (this.product_totalUnit == other.product_totalUnit)
+            return this.product_name.compareToIgnoreCase(other.product_name);   // Alphabetical Order
+        else
+            return other.product_totalUnit - this.product_totalUnit;            // Decreasing Order
+    }
+
     public void ProductInfo(){
-        System.out.printf("%-15s (%s) unit price = %d\n",product_name, product_code, product_unitprice);
+        System.out.printf("%-15s (%s) unit price = %,6d\n", product_name, product_code, product_unitprice);
     }
 
     public String getProductCode(){
@@ -101,6 +94,18 @@ class Order{
         this.product_name = product_name;
         this.order_unit = order_unit;
         this.order_plan = order_plan;
+    }
+
+    public String getProduct() {
+        return product_name.getProductName();
+    }
+
+    public String getName() {
+        return order_name.getName();
+    }
+
+    public int getID() {
+        return order_id;
     }
 
     public void OrderInfo(){
@@ -166,23 +171,20 @@ class Order{
 class Customer implements Comparable<Customer>{
     // Original from file
     private String order_name;
-
     // Extra requirement
     private int order_point;
 
     // Area for method
-
-    public int compareTo(Customer other){
-        if(this.order_point>other.order_point){
-            return-1;
-        }else if(this.order_point<other.order_point){
-            return 1;
-        }else return 0;
+    public Customer(String name,int point){
+        this.order_name = name;
+        this.order_point = point;
     }
 
-    public Customer(String name,int point){
-        this.order_name=name;
-        this.order_point=point;
+    public int compareTo(Customer other) {
+        if (this.order_point == other.order_point)
+            return this.order_name.compareToIgnoreCase(other.order_name);   // Alphabetical Order
+        else
+            return other.order_point - this.order_point;                    // Decreasing Order
     }
 
     public String getName(){
@@ -222,183 +224,186 @@ class Installment{
     }
 
     public void InstallInfo(){
-        System.out.printf("%2d-month plans  joajds monthly interest = %.2f %%\n",month, interest);
+        System.out.printf("%2d-month plans    monthly interest = %.2f %%\n",month, interest);
     }
 }
 
 
 
-public class Main{
-
-    public static String checkFile(String  fileName){
-        String path = "";
-        fileName = path+fileName;
-        while(true){
-            File newFile = new File(fileName);
-            try(Scanner inFile = new Scanner(newFile)){
-                System.out.println("\nRead from " + newFile.getPath());
-                break;
-            }catch(Exception e){
-                System.out.println(e);
-                System.out.println("New File Name =");
-                Scanner input = new Scanner(System.in);
-                fileName = input.nextLine();
-                input.close();
-            }
-        }
-        return fileName;
-    }
-
-
+public class Main {
 
     // According to the requirement, errors locate in 'orders_errors.txt' only
-    public static void CheckingNumber(int[] number) throws InvalidNumberException{
+    public static void CheckingNumber (int[] number) throws InvalidNumberException{
         // int[] number = {order_id, order_unit, order_plan};
     }
 
-    public static void CheckingName(String[] name) throws InvalidNameException{
+    public static void CheckingName (String[] name) throws InvalidNameException{
         // String[] name = {order_name, order_code};
     }
 
     // For main, didn't add try catch yet
-    public static void main(String[] args){
-
+    public static void main (String[] args) {
+        Scanner userInput = new Scanner(System.in);
         ArrayList<Product> productsList = new ArrayList<Product>();
         ArrayList<Customer> customersList = new ArrayList<Customer>();
         ArrayList<Installment> installmentsList = new ArrayList<Installment>();
         ArrayList<Order> orderList = new ArrayList<Order>();
 
         // Scanner
-        try{
-            // products.txt
-            File ProductFile = new File(checkFile("product.txt"));
-            Scanner ProductScan = new Scanner(ProductFile);
-            ProductScan.nextLine();
-            while(ProductScan.hasNext()){
-                String line = ProductScan.nextLine();
-                String [] cols = line.trim().split("\\s*,\\s*");
-                String code = cols[0];
-                String productName = cols[1];
-                int productPrice = Integer.parseInt(cols[2]);
 
-                productsList.add(new Product(code,productName,productPrice));
+        // products.txt
+        File ProductFile = new File(FileName.PRODUCT);
+        while (true) {
+            try (Scanner ProductScan = new Scanner(ProductFile)) {
+                ProductScan.nextLine();
+                while (ProductScan.hasNext()) {
+                    String line = ProductScan.nextLine();
+                    String[] cols = line.trim().split("\\s*,\\s*");
+                    String code = cols[0];
+                    String productName = cols[1];
+                    int productPrice = Integer.parseInt(cols[2]);
+
+                    productsList.add(new Product(code,productName,productPrice));
+                } break;
+            } catch (Exception e) {
+                System.err.println(e);
+                System.out.println("New File Name = ");
+                ProductFile = new File(userInput.nextLine().trim());
+                continue;
             }
-            ProductScan.close();
-            
-            for (Product product : productsList){
-                //productsList.get(i).ProductInfo();
-                product.ProductInfo();
-            }
-            
-            System.out.println("");
+        }
+        System.out.println("Read from " + ProductFile.getPath());
+        
+        for (Product product : productsList){
+            //productsList.get(i).ProductInfo();
+            product.ProductInfo();
+        }
+        
+        System.out.println("");
 
-            // installments.txt
-            File InstallFile = new File(checkFile("installments.txt"));
-            Scanner InstallScan = new Scanner(InstallFile);
-
-            if (InstallScan.hasNextLine()) {
+        // installments.txt
+        File InstallFile = new File(FileName.INSTALLMENT);
+        while (true) {
+            try (Scanner InstallScan = new Scanner(InstallFile)) {        
                 InstallScan.nextLine();
-            }
+                while(InstallScan.hasNext()) {
+                    String line = InstallScan.nextLine();
+                    String [] cols = line.trim().split("\\s*,\\s*");
+                    int months = Integer.parseInt(cols[0]);
+                    double interest = Double.parseDouble(cols[1]);
+                    installmentsList.add(new Installment(months,interest));
+                }
+                break;
+            } catch (FileNotFoundException e) {
+                System.err.println(e);
+                System.out.println("New File Name =");
+                InstallFile = new File(userInput.nextLine().trim());
+                continue;
+            } catch (Exception e) { System.err.println(e); }
+        }
+        System.out.println("Read from " + InstallFile.getPath());
+        
+        for(Installment installment : installmentsList){
+            installment.InstallInfo();
+        }
+        System.out.println();
 
-            while(InstallScan.hasNext()){
-                String line = InstallScan.nextLine();
-                String [] cols = line.trim().split("\\s*,\\s*");
-                int months = Integer.parseInt(cols[0]);
-                double interest = Double.parseDouble(cols[1]);
-                installmentsList.add(new Installment(months,interest));
-            }
-            InstallScan.close();
-            
-            for(Installment installment : installmentsList){
-                
-                installment.InstallInfo();
-            }
+        // orders.txt
+        File OrderFile = new File(FileName.ORDER);
+        while (true) {
+            try (Scanner OrderScan = new Scanner(OrderFile)) {
+                OrderScan.nextLine();
+                while (OrderScan.hasNext()) {
+                    String line = "";
+                    try {
+                        line = OrderScan.nextLine();
+                        String[] cols = line.trim().split("\\s*,\\s*");
+                        int id = Integer.parseInt(cols[0]);
+                        String name = cols[1];
+                        Customer current_customer = new Customer("EMPTY",0);
+                        int x = 0;
+                        do {
+                            if(customersList.size()==0){
+                                current_customer = new Customer(name,0);
+                                customersList.add(current_customer);
 
-            // orders.txt
-            File OrderFile = new File(checkFile("orders.txt"));
-            Scanner OrderScan = new Scanner(OrderFile);
-            OrderScan.nextLine();
-            while(OrderScan.hasNext()){
-                String line = OrderScan.nextLine();
-                String [] cols = line.trim().split("\\s*,\\s*");
-                int id = Integer.parseInt(cols[0]);
-                String name = cols[1];
-                Customer current_customer = new Customer("EMPTY",0);
-                int x = 0;
-                int invalid = 0;
-                
-                do{
-                    if(customersList.size()==0){
-                        current_customer = new Customer(name,0);
-                        customersList.add(current_customer);
-                        
-                        break;
-                    }else if(customersList.get(x).getName().equals(name)){
-                        current_customer = customersList.get(x);
-                        break;
+                                break;
+                            }else if(customersList.get(x).getName().equals(name)){
+                                current_customer = customersList.get(x);
+                                break;
 
-                    }else if(x==customersList.size()-1){
-                        current_customer = new Customer(name,0);
-                        customersList.add(current_customer);
-                        break;
-                        
-                    }
-                    x++;
-                    
-                }while(x<customersList.size());
-                
+                            }else if(x==customersList.size()-1){
+                                current_customer = new Customer(name,0);
+                                customersList.add(current_customer);
+                                break;
 
-                Product productOrder = new Product("EMPTY","E",0);
-                String productCode = cols[2];
-                for (int i = 0; i<productsList.size();i++){
-                    if (productsList.get(i).getProductCode().equals(productCode)){
-                        productOrder = productsList.get(i);   
-                        break;
+                            }
+                            x++;
+                        } while (x<customersList.size());
 
-                    } else if (i==productsList.size()-1) {
-                        System.out.println("This product doesnt exist");
-                        invalid = 1;
+                        Product productOrder = new Product("EMPTY","E",0);
+                        String productCode = cols[2];
+                        int unit = Integer.parseInt(cols[3]);
+                        int plan = Integer.parseInt(cols[4]);
+
+                        for (int i = 0; i<productsList.size();i++){
+                            if (productsList.get(i).getProductCode().equals(productCode)){
+                                productOrder = productsList.get(i);   
+                                break;
+                            } else if (i==productsList.size()-1) throw new InvalidInputException("For product: \"" + productCode + "\"");
+                        }
+                        if (unit < 0) throw new InvalidInputException("For units: \"" + productCode + "\"");
+
+                        for (int i = 0; i<installmentsList.size(); i++) {
+                            if (installmentsList.get(i).getMonth() == plan) break;
+                            else if (i==installmentsList.size()-1) throw new InvalidInputException("For installment plan: \"" + plan + "\"");
+                        }
+
+
+                        orderList.add(new Order(id,current_customer,productOrder,unit,plan));
+                    } catch (Exception e) {
+                        System.err.println(e);
+                        System.out.println(line + "\n");
                         continue;
                     }
                 }
-                int unit = Integer.parseInt(cols[3]);
-                int plan = Integer.parseInt(cols[4]);
-                if (invalid == 0) orderList.add(new Order(id,current_customer,productOrder,unit,plan));
-                
+                break;
+            } catch (FileNotFoundException e) {
+                System.err.println(e);
+                System.out.println("New File Name =");
+                OrderFile = new File(userInput.nextLine().trim());
+                continue;
             }
-            OrderScan.close();
+        }
+        System.out.println("Read from " + OrderFile.getPath());
 
-            for(Order order : orderList){
-                order.OrderInfo();
+        for(Order order : orderList){
+            order.OrderInfo();
+        }
+        System.out.println("\n=== Order processing ===");
+        for(Order order : orderList){
+            order.OrderProcess(installmentsList);
+        }
+        Collections.sort(productsList);
+        Collections.sort(customersList);
+
+        System.out.println("\n=== Product summary ===");
+
+        for(Product product : productsList){
+            ArrayList<Order> luckyList = new ArrayList<Order>();
+            for (Order order : orderList) {
+                if (order.getProduct() == product.getProductName()) luckyList.add(order);
             }
-
-            System.out.println("\n=== Order processing ===");
-            for(Order order : orderList){
-                order.OrderProcess(installmentsList);
-            }
-
-            Collections.sort(productsList);
-            Collections.sort(customersList);
-
-            System.out.println("\n=== Product summary ===");
-
-            for(Product product : productsList){
-                System.out.printf("%-15s total sales = %3d units  =  %,12.2f THB   ",product.getProductName(),product.getTotal(0),(float)product.getTotal(1));
-                System.out.printf("lucky draw winner = not finish \n");
-            }
-
-            System.out.println("\n=== Customer summary ===");
-
-            for(Customer customer : customersList){
-                System.out.printf("%-7s remaining points = %,6d \n",customer.getName(),customer.getPoints());
-            }
-            
-
-        } catch (Exception e) { System.out.println(e); }
-
-
-
-
-        
+            Random random = new Random();
+            int lucky = random.nextInt(luckyList.size());
+            System.out.printf("%-15s total sales = %3d units  =  %,12.2f THB   ",product.getProductName(),product.getTotal(0),(float)product.getTotal(1));
+            System.out.printf("lucky draw winner = %7s (order %2d)\n", luckyList.get(lucky).getName(), luckyList.get(lucky).getID());
+        }
+    
+        System.out.println("\n=== Customer summary ===");
+    
+        for(Customer customer : customersList){
+            System.out.printf("%-7s remaining points = %,6d \n",customer.getName(),customer.getPoints());
+        }
     }
 }

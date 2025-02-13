@@ -1,6 +1,18 @@
-// Project 1
-
-// * Check file path *
+/*
+===================================================
+Group Project 1
+---------------------------------------------------
+Group member:
+6580170 Uraiphat Thanaphaet
+6581096 Phukij Rittapreedanon
+6581098 Siriwat Ittisompiboon
+6581167 Wongsatorn Suwannarit
+6680535 Ratthawit Barameekanjanawat
+---------------------------------------------------
+Note:
+This Code is written inside VSCode and Codespaces
+===================================================
+*/
 
 import java.io.*;
 import java.util.*;
@@ -15,13 +27,13 @@ class FileName {
 }
 
 class InvalidInputException extends Exception {
-    public InvalidInputException(String message){
+    public InvalidInputException(String message) {
         super(message);
     }
 }
 
 // From products.txt
-class Product implements Comparable<Product>{
+class Product implements Comparable<Product> {
     // Original from file
     private String product_code;
     private String product_name;
@@ -30,7 +42,7 @@ class Product implements Comparable<Product>{
     private int product_totalCash;
     private int product_totalUnit;
 
-    public Product(String product_code, String product_name, int product_unitprice){
+    public Product(String product_code, String product_name, int product_unitprice) {
         this.product_code = product_code;
         this.product_name = product_name;
         this.product_unitprice = product_unitprice;
@@ -39,46 +51,45 @@ class Product implements Comparable<Product>{
     }
 
     // Area for method
-    public int compareTo(Product other){
+    public int compareTo(Product other) {
         if (this.product_totalUnit == other.product_totalUnit)
             return this.product_name.compareToIgnoreCase(other.product_name);   // Alphabetical Order
         else
             return other.product_totalUnit - this.product_totalUnit;            // Decreasing Order
     }
 
-    public void ProductInfo(){
+    public void ProductInfo() {
         System.out.printf("%-15s (%s) unit price = %,6d\n", product_name, product_code, product_unitprice);
     }
 
-    public String getProductCode(){
+    public String getProductCode() {
         return product_code;
     }
 
-    public String getProductName(){
+    public String getProductName() {
         return product_name;
     }
 
-    public int getProductPrice(){
+    public int getProductPrice() {
         return product_unitprice;
     }
 
-    public void addSales(int unit){
+    public void addSales(int unit) {
         product_totalUnit += unit;
         product_totalCash += (unit*product_unitprice);
 
     }
 
-    public int getTotal(int x){
+    public int getTotal(int x) {
         if (x==0) return product_totalUnit;
         return product_totalCash;
     }
-
 }
 
 
 
 // From orders.txt + product_name
-class Order{
+class Order {
     // Original from file
     private int order_id;
     private Customer order_name;
@@ -88,7 +99,7 @@ class Order{
 
 
     // Area for method
-    public Order(int order_id, Customer order_name, Product product_name, int order_unit, int order_plan){
+    public Order(int order_id, Customer order_name, Product product_name, int order_unit, int order_plan) {
         this.order_id = order_id;
         this.order_name = order_name;
         this.product_name = product_name;
@@ -108,11 +119,11 @@ class Order{
         return order_id;
     }
 
-    public void OrderInfo(){
+    public void OrderInfo() {
         System.out.printf("Order %2d >> %-5s  %-14s x %2d  %3d-month installments\n",order_id, order_name.getName(), product_name.getProductName(), order_unit, order_plan);
     }
 
-    public void OrderProcess(ArrayList<Installment> installmentsList){
+    public void OrderProcess(ArrayList<Installment> installmentsList) {
         float subtotal1 = product_name.getProductPrice() * order_unit;
         int points_earn = (int) (subtotal1 / 500);
 
@@ -168,14 +179,14 @@ class Order{
 }
 
 // From orders.txt + order_name
-class Customer implements Comparable<Customer>{
+class Customer implements Comparable<Customer> {
     // Original from file
     private String order_name;
     // Extra requirement
     private int order_point;
 
     // Area for method
-    public Customer(String name,int point){
+    public Customer(String name,int point) {
         this.order_name = name;
         this.order_point = point;
     }
@@ -187,30 +198,28 @@ class Customer implements Comparable<Customer>{
             return other.order_point - this.order_point;                    // Decreasing Order
     }
 
-    public String getName(){
+    public String getName() {
         return order_name;
     }
 
-    public int getPoints(){
+    public int getPoints() {
         return order_point;
     }
 
-    public void addPoints(int num){
+    public void addPoints(int num) {
         order_point += num;
     }
 }
 
-
-
 // From installments.txt
-class Installment{
+class Installment {
     // Original from file
     private int month;
     private double interest;
 
     // Extra requirement
     // Area for method
-    public Installment(int month, double interest){
+    public Installment(int month, double interest) {
         this.month = month;
         this.interest = interest;
     }
@@ -223,7 +232,7 @@ class Installment{
         return interest;
     }
 
-    public void InstallInfo(){
+    public void InstallInfo() {
         System.out.printf("%2d-month plans    monthly interest = %.2f %%\n",month, interest);
     }
 }
@@ -231,25 +240,12 @@ class Installment{
 
 
 public class Main {
-
-    // According to the requirement, errors locate in 'orders_errors.txt' only
-    public static void CheckingNumber (int[] number) throws InvalidNumberException{
-        // int[] number = {order_id, order_unit, order_plan};
-    }
-
-    public static void CheckingName (String[] name) throws InvalidNameException{
-        // String[] name = {order_name, order_code};
-    }
-
-    // For main, didn't add try catch yet
     public static void main (String[] args) {
         Scanner userInput = new Scanner(System.in);
         ArrayList<Product> productsList = new ArrayList<Product>();
         ArrayList<Customer> customersList = new ArrayList<Customer>();
         ArrayList<Installment> installmentsList = new ArrayList<Installment>();
         ArrayList<Order> orderList = new ArrayList<Order>();
-
-        // Scanner
 
         // products.txt
         File ProductFile = new File(FileName.PRODUCT);
@@ -274,8 +270,7 @@ public class Main {
         }
         System.out.println("Read from " + ProductFile.getPath());
         
-        for (Product product : productsList){
-            //productsList.get(i).ProductInfo();
+        for (Product product : productsList) {
             product.ProductInfo();
         }
         
@@ -303,7 +298,7 @@ public class Main {
         }
         System.out.println("Read from " + InstallFile.getPath());
         
-        for(Installment installment : installmentsList){
+        for(Installment installment : installmentsList) {
             installment.InstallInfo();
         }
         System.out.println();
@@ -323,16 +318,16 @@ public class Main {
                         Customer current_customer = new Customer("EMPTY",0);
                         int x = 0;
                         do {
-                            if(customersList.size()==0){
+                            if (customersList.size()==0) {
                                 current_customer = new Customer(name,0);
                                 customersList.add(current_customer);
 
                                 break;
-                            }else if(customersList.get(x).getName().equals(name)){
+                            } else if (customersList.get(x).getName().equals(name)) {
                                 current_customer = customersList.get(x);
                                 break;
 
-                            }else if(x==customersList.size()-1){
+                            } else if (x==customersList.size()-1) {
                                 current_customer = new Customer(name,0);
                                 customersList.add(current_customer);
                                 break;
@@ -346,8 +341,8 @@ public class Main {
                         int unit = Integer.parseInt(cols[3]);
                         int plan = Integer.parseInt(cols[4]);
 
-                        for (int i = 0; i<productsList.size();i++){
-                            if (productsList.get(i).getProductCode().equals(productCode)){
+                        for (int i = 0; i<productsList.size();i++) {
+                            if (productsList.get(i).getProductCode().equals(productCode)) {
                                 productOrder = productsList.get(i);   
                                 break;
                             } else if (i==productsList.size()-1) throw new InvalidInputException("For product: \"" + productCode + "\"");
@@ -375,13 +370,14 @@ public class Main {
                 continue;
             }
         }
+        userInput.close();
         System.out.println("Read from " + OrderFile.getPath());
 
-        for(Order order : orderList){
+        for (Order order : orderList) {
             order.OrderInfo();
         }
         System.out.println("\n=== Order processing ===");
-        for(Order order : orderList){
+        for (Order order : orderList) {
             order.OrderProcess(installmentsList);
         }
         Collections.sort(productsList);
@@ -389,7 +385,7 @@ public class Main {
 
         System.out.println("\n=== Product summary ===");
 
-        for(Product product : productsList){
+        for (Product product : productsList) {
             ArrayList<Order> luckyList = new ArrayList<Order>();
             for (Order order : orderList) {
                 if (order.getProduct() == product.getProductName()) luckyList.add(order);
@@ -402,9 +398,8 @@ public class Main {
     
         System.out.println("\n=== Customer summary ===");
     
-        for(Customer customer : customersList){
+        for (Customer customer : customersList) {
             System.out.printf("%-7s remaining points = %,6d \n",customer.getName(),customer.getPoints());
         }
-        userInput.close();
     }
 }

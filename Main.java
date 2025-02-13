@@ -352,7 +352,7 @@ public class Main {
                                 break;
                             } else if (i==productsList.size()-1) throw new InvalidInputException("For product: \"" + productCode + "\"");
                         }
-                        if (unit < 0) throw new InvalidInputException("For units: \"" + productCode + "\"");
+                        if (unit < 0) throw new InvalidInputException("For units: \"" + unit + "\"");
 
                         for (int i = 0; i<installmentsList.size(); i++) {
                             if (installmentsList.get(i).getMonth() == plan) break;
@@ -363,7 +363,7 @@ public class Main {
                         orderList.add(new Order(id,current_customer,productOrder,unit,plan));
                     } catch (Exception e) {
                         System.err.println(e);
-                        System.out.println(line + "\n");
+                        System.out.printf("%-40s <-- Skip this line\n\n", line);
                         continue;
                     }
                 }
@@ -405,5 +405,6 @@ public class Main {
         for(Customer customer : customersList){
             System.out.printf("%-7s remaining points = %,6d \n",customer.getName(),customer.getPoints());
         }
+        userInput.close();
     }
 }

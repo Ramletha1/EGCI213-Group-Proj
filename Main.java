@@ -10,16 +10,19 @@ Group member:
 6680535 Ratthawit Barameekanjanawat
 ---------------------------------------------------
 Note:
-This Code is written inside VSCode and Codespaces
+This Code is written inside VSCode and Codespaces.
+- Uncomment "for NetBeans", comment "for VSCode"
 ===================================================
 */
+
+// package Project1_6581167;                                                                // for NetBeans
 
 import java.io.*;
 import java.util.*;
 
 class FileName {
-    public static final String PATH = "";                           // for VSCode
-    // public static final String PATH = "src/main/Java/";          // for NetBeans
+    public static final String PATH = "";                                                   // for VSCode
+    // public static final String PATH = "src/main/java/Projdct_6581167";                   // for NetBeans
     public static final String PRODUCT = "products.txt";
     public static final String INSTALLMENT = "installments.txt";
     public static final String ORDER = "orders.txt";
